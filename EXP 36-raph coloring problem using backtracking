@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdbool.h>
+#define MAX_VERTICES 20
+void printSolution(int colors[], int num_vertices);
+bool isSafe(int vertex, int graph[][MAX_VERTICES], int colors[], int num_vertices, int color)
+ {
+    for (int i = 0; i < num_vertices; i++) 
+    {
+        if (graph[vertex][i] && colors[i] == color) 
+       {
+            return false;
+        }
+    }
+    return true;
+}
+bool graphColoringUtil(int graph[][MAX_VERTICES], int num_vertices, int m, int colors[], int vertex) 
+{
+    if (vertex == num_vertices) 
+     {
+        return true;
+      }
+    for (int color = 1; color <= m; color++)
+    {
+        if (isSafe(vertex, graph, colors, num_vertices, color)) 
+       {
+            colors[vertex] = color;
+            if (graphColoringUtil(graph, num_vertices, m, colors, vertex + 1)) 
+           {
+                return true;
+            }
+            colors[vertex] = 0; 
+         }
+      }
+
+    return false;
+}
+bool graphColoring(int graph[][MAX_VERTICES], int num_vertices, int m) 
+{
+    int colors[MAX_VERTICES];
+    for (int i = 0; i < num_vertices; i++) 
+   {
+        colors[i] = 0;
+    }
+    if (!graphColoringUtil(graph, num_vertices, m, colors, 0)) 
+   {
+        return false;
+    }
+    printf("Graph can be colored using %d colors.\n", m);
+    printf("Coloring of vertices:\n");
+    printSolution(colors, num_vertices);
+    return true;
+}
+void printSolution(int colors[], int num_vertices) 
+ {
+    for (int i = 0; i < num_vertices; i++) {
+        printf("Vertex %d: Color %d\n", i, colors[i]);
+    }
+}
+int main() 
+{
+    int num_vertices, m;
+    printf("Enter the number of vertices (max %d): ", MAX_VERTICES);
+    scanf("%d", &num_vertices);
+    int graph[MAX_VERTICES][MAX_VERTICES];
+    printf("Enter the adjacency matrix for the graph:\n");
+    for (int i = 0; i < num_vertices; i++) 
+    {
+        for (int j = 0; j < num_vertices; j++) 
+       {
+            scanf("%d", &graph[i][j]);
+        }
+     }
+    printf("Enter the number of colors: ");
+    scanf("%d", &m);
+    if (m < 1) 
+   {
+        printf("Number of colors should be at least 1.\n");
+        return 1;
+    }
+    if (!graphColoring(graph, num_vertices, m)) 
+   {
+        printf("Graph cannot be colored with the given constraints.\n");
+    }
+    return 0;
+}
